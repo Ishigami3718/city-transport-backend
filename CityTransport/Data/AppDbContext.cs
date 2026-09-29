@@ -1,7 +1,7 @@
-﻿using CityPass.API.Entities;
+﻿using CityTransport.Entities;
 using Microsoft.EntityFrameworkCore;
 
-namespace CityPass.API.Data;
+namespace CityTransport.Data;
 
 public class AppDbContext : DbContext
 {

@@ -1,4 +1,4 @@
-﻿namespace CityPass.API.Entities;
+﻿namespace CityTransport.Entities;
 
 public enum TicketStatus
 {

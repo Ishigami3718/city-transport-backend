@@ -1,6 +1,4 @@
-﻿using CityTransport.Entities;
-
-namespace CityPass.API.Entities;
+﻿namespace CityTransport.Entities;
 
 public class User
 {
