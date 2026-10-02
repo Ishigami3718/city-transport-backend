@@ -16,23 +16,30 @@ public class PurchaseService : IPurchaseService
 
     public async Task<CreatePurchaseResponseDto> CreatePurchaseAsync(CreatePurchaseRequestDto request, Guid userId)
     {
-        //does tariff exist in the database
+        // does tariff exist in the database
         var tariff = await _context.Tariffs
+            .Include(t => t.Routes)
             .FirstOrDefaultAsync(t => t.Id == request.TariffId)
             ?? throw new KeyNotFoundException($"Тариф з ID '{request.TariffId}' не знайдено.");
 
         if (!tariff.IsActive)
         {
-            throw new InvalidOperationException($"Тариф '{tariff.Name}' наразі недоступний для купівлі.");
+            throw new InvalidOperationException($"Тариф '{tariff.Name}' неактивний.");
         }
 
-        // 2. Check if the route exists in the database (if provided)
+        //  Check if the route exists in the database (if provided)
         if (request.RouteId.HasValue)
         {
             var routeExists = await _context.Routes.AnyAsync(r => r.Id == request.RouteId.Value);
             if (!routeExists)
             {
                 throw new KeyNotFoundException($"Маршрут з ID '{request.RouteId.Value}' не знайдено.");
+            }
+
+            // if the tariff has associated routes, check if the provided route is valid for this tariff
+            if (tariff.Routes.Any() && !tariff.Routes.Any(r => r.Id == request.RouteId.Value))
+            {
+                throw new InvalidOperationException($"Тариф '{tariff.Name}' не діє на обраний маршрут.");
             }
         }
 
