@@ -1,5 +1,6 @@
 using CityTransport.Data;
 using CityTransport.Entities;
+using CityTransport.Services;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -8,6 +9,7 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddRazorPages();
 builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
+builder.Services.AddScoped<IPurchaseService, PurchaseService>();
 
 var app = builder.Build();
 
