@@ -1,3 +1,5 @@
+using CityTransport.Utils.TicketUtils;
+using System.Security.Cryptography;
 using CityTransport.Data;
 using CityTransport.Entities;
 using CityTransport.Services;
@@ -17,6 +19,9 @@ builder.Services.AddScoped<IPurchaseService, PurchaseService>();
 builder.Services.AddScoped<IPaymentService, PaymentService>();
 builder.Services.AddScoped<ITicketService, TicketService>();
 
+builder.Services.Configure<CryptoSettings>(builder.Configuration.GetSection("CryptoSettings"));
+builder.Services.AddTransient<QRCodeGeneratorService>();
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
@@ -35,6 +40,7 @@ else
                .WithDefaultHttpClient(ScalarTarget.Http, ScalarClient.Http11);
     });
 }
+
 
 app.UseHttpsRedirection();
 
