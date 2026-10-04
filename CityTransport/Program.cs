@@ -1,10 +1,23 @@
 using CityTransport.Utils.TicketUtils;
 using System.Security.Cryptography;
+using CityTransport.Data;
+using CityTransport.Entities;
+using CityTransport.Services;
+using Microsoft.EntityFrameworkCore;
+using Scalar.AspNetCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
+builder.Services.AddControllers();
+builder.Services.AddOpenApi();
+
 builder.Services.AddRazorPages();
+builder.Services.AddDbContext<AppDbContext>(options =>
+    options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
+builder.Services.AddScoped<IPurchaseService, PurchaseService>();
+builder.Services.AddScoped<IPaymentService, PaymentService>();
+builder.Services.AddScoped<ITicketService, TicketService>();
 
 builder.Services.Configure<CryptoSettings>(builder.Configuration.GetSection("CryptoSettings"));
 builder.Services.AddTransient<QRCodeGeneratorService>();
@@ -15,8 +28,17 @@ var app = builder.Build();
 if (!app.Environment.IsDevelopment())
 {
     app.UseExceptionHandler("/Error");
-    // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
     app.UseHsts();
+}
+else
+{
+    app.MapOpenApi();
+    app.MapScalarApiReference(options =>
+    {
+        options.WithTitle("CityTransport API Reference")
+               .WithTheme(ScalarTheme.Purple)
+               .WithDefaultHttpClient(ScalarTarget.Http, ScalarClient.Http11);
+    });
 }
 
 
@@ -29,5 +51,6 @@ app.UseAuthorization();
 app.MapStaticAssets();
 app.MapRazorPages()
    .WithStaticAssets();
+app.MapControllers();
 
 app.Run();
