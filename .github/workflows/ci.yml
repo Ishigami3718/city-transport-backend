@@ -1,0 +1,34 @@
+name: .NET CI & Tests
+
+# На яких етапах запускати перевірку
+on:
+  push:
+    branches: [ "main", "master", "dev" ] # Вкажіть ваші основні гілки
+  pull_request:
+    branches: [ "main", "master", "dev" ]
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+
+    steps:
+    # 1. Завантажуємо код з репозиторію
+    - uses: actions/checkout@v4
+
+    # 2. Встановлюємо .NET SDK (змініть версію, якщо у вас 9.0 або інша, наприклад '9.0.x')
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v4
+      with:
+        dotnet-version: '8.0.x'
+
+    # 3. Відновлюємо залежності (NuGet пакети)
+    - name: Restore dependencies
+      run: dotnet restore
+
+    # 4. Збираємо проєкт
+    - name: Build project
+      run: dotnet build --no-restore
+
+    # 5. Запускаємо юніт-тести
+    - name: Run unit tests
+      run: dotnet test --no-build --verbosity normal
