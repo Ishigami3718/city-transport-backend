@@ -6,4 +6,7 @@ public interface ITicketService
 {
     Task<IEnumerable<TicketDto>> GetUserTicketsAsync(Guid userId, bool onlyActive = false);
     Task<TicketDto?> GetTicketByIdAsync(Guid ticketId, Guid userId);
+
+    
+    Task<IEnumerable<string>> GetAvailableTicketTypesAsync();
 }
