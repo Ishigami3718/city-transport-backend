@@ -11,6 +11,22 @@ jobs:
   build-and-test:
     runs-on: ubuntu-latest
 
+    # Підіймаємо чисту базу PostgreSQL для виконання інтеграційних тестів
+    services:
+      postgres:
+        image: postgres:15
+        env:
+          POSTGRES_DB: CityTransportDbDev
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: your_password
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+    
     steps:
     # 1. Завантажуємо код з репозиторію
     - uses: actions/checkout@v4
@@ -28,6 +44,15 @@ jobs:
     # 4. Збираємо проєкт
     - name: Build project
       run: dotnet build --no-restore
+      
+    - name: Install EF Core CLI tools
+      run: dotnet tool install --global dotnet-ef
+
+    - name: Apply database migrations
+      run: dotnet ef database update --project НазваВашогоПроєкту/НазваПроєкту.csproj
+      env:
+        # Рядок підключення до тестового контейнера PostgreSQL вище
+        ConnectionStrings__DefaultConnection: "Host=localhost;Port=5432;Database=CityTransportDbDev;Username=postgres;Password=your_password"
 
     # 5. Запускаємо юніт-тести
     - name: Run unit tests
