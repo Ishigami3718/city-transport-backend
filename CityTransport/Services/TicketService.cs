@@ -100,4 +100,10 @@ public class TicketService : ITicketService
             ValidUntil = ticket.ValidUntil
         };
     }
+
+    public Task<IEnumerable<string>> GetAvailableTicketTypesAsync()
+    {
+        //TODO: Implement logic to fetch available ticket types from the database or configuration and add types field in ticket entity(optional)
+        throw new NotImplementedException();
+    }
 }

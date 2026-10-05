@@ -1,5 +1,6 @@
 using CityTransport.DTOs.Tickets;
 using CityTransport.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace CityTransport.Controllers;
@@ -41,5 +42,14 @@ public class TicketsController : ControllerBase
         }
 
         return Ok(ticket);
+    }
+
+    [HttpGet("types")]
+    [ProducesResponseType(typeof(IEnumerable<TicketDto>), StatusCodes.Status200OK)]
+    [AllowAnonymous]
+    public async Task<ActionResult<IEnumerable<string>>> GetTicketTypes()
+    {
+        var types = await _ticketService.GetAvailableTicketTypesAsync();
+        return Ok(types);
     }
 }
